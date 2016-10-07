@@ -77,6 +77,9 @@ def nextStep(x,y,n):
 
     return Implies( And(black0,white0), Or(NextConfs) ), NextPoints
 
+def toString(x,y,n):
+    return str(x) + ", " + str(y) + ", " + str(n)
+
 def allTransitions(x0,y0,n0):
     """
     Return all transitions across all n with initial state
@@ -85,12 +88,16 @@ def allTransitions(x0,y0,n0):
     transitions_optimised = []
     next_transitions = [(x0, y0)]
     n = 0
-    while next_transitions and n < n0 + 1:
+    calculated = {}
+    while next_transitions and n < n0:
         next_transitions_new = []
         for x, y in next_transitions:
-            if x in range(0, x0 + y0 + 1) and y in range(0, x0 + y0 + 1):
-                next_step, next_transitions_new = nextStep(x, y, n)
-                transitions_optimised.append(next_step)
+            if x in range(0, x0 + y0 + 2) and y in range(0, x0 + y0 + 2):
+                if not calculated.get(toString(x,y,n)):
+                    next_step, next_transitions_part = nextStep(x, y, n)
+                    transitions_optimised.append(next_step)
+                    next_transitions_new.extend(next_transitions_part)
+                    calculated[toString(x,y,n)] = 1
         next_transitions = next_transitions_new
         n += 1
     return And(transitions_optimised)
